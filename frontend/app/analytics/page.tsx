@@ -185,7 +185,7 @@ export default function AnalyticsPage() {
           <div>
             <div className="flex items-center space-x-2 text-xs font-mono text-cyan-400 mb-2">
               <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
-              <span>PAGE 4 // FALKORDB GRAPH ANALYTICS & CYPHER CONSOLE</span>
+              <span>FALKORDB GRAPH ANALYTICS & CYPHER CONSOLE</span>
             </div>
             <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-white flex flex-wrap items-center gap-2 sm:gap-3">
               <span>FalkorDB Graph Analytics & Cypher Studio</span>

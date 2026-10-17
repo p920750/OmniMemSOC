@@ -134,7 +134,7 @@ export default function ExecutiveOverviewPage() {
             <div className="flex items-center space-x-2 text-[10px] sm:text-xs font-mono text-cyan-400">
               <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-cyan-400 animate-pulse shrink-0"></span>
               <span className="font-semibold uppercase tracking-wider truncate">
-                PAGE 1 // EXECUTIVE OVERVIEW & MULTI-TENANT MEMORY HUB
+                EXECUTIVE OVERVIEW & MULTI-TENANT MEMORY HUB
               </span>
             </div>
             <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold tracking-tight text-white font-sans">

@@ -227,7 +227,7 @@ export default function SwarmCoordinationPage() {
           <div>
             <div className="flex items-center space-x-2 text-xs font-mono text-cyan-400 mb-2">
               <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
-              <span>PAGE 2 // AGENT SWARM COORDINATION & HANDOFF STUDIO</span>
+              <span>AGENT SWARM COORDINATION & HANDOFF STUDIO</span>
             </div>
             <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-white flex flex-wrap items-center gap-2">
               <span>Autonomous Swarm Coordination</span>

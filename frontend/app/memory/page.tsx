@@ -143,7 +143,7 @@ export default function MemoryExplorerPage() {
           <div>
             <div className="flex items-center space-x-2 text-xs font-mono text-cyan-400 mb-2">
               <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
-              <span>PAGE 3 // EPISODIC & PROCEDURAL MEMORY EXPLORER</span>
+              <span>EPISODIC & PROCEDURAL MEMORY EXPLORER</span>
             </div>
             <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-white flex flex-wrap items-center gap-2">
               <span>SOC Cognitive Threat Memory Repository</span>
