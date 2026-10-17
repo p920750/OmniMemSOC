@@ -427,65 +427,73 @@ export interface EpisodicEvent {
 
 export async function searchSemanticMemory(
   tenantId: string = 'tenant-alpha',
-  query: string,
+  query: string = '',
   k: number = 5,
   threshold: number = 0.0
 ): Promise<SemanticSearchResult[]> {
+  const effectiveQuery = (query || '').trim() || 'security incident';
+  const fallbackSemantic: SemanticSearchResult[] = [
+    {
+      chunk_id: 'chunk-101',
+      incident_id: 'inc-9481',
+      incident_title: 'Suspected Kerberoasting Activity on Domain Controller',
+      incident_severity: 'CRITICAL',
+      content: 'Kerberoasting technique T1558.003 involves requesting RC4-HMAC encrypted Kerberos service tickets (TGS) for offline password cracking against high-privilege service accounts.',
+      source: 'MITRE_ATTACK_INTEL',
+      score: effectiveQuery.toLowerCase().includes('kerberos') ? 0.96 : 0.88,
+    },
+    {
+      chunk_id: 'chunk-102',
+      incident_id: 'inc-9482',
+      incident_title: 'Anomalous Outbound SSH Traffic to Known C2 IP',
+      incident_severity: 'HIGH',
+      content: 'Command and control beaconing T1071.001 to external IP 198.51.100.23 on TCP port 2222 indicates potential Cobalt Strike or Mythic agent listener with 45s jitter.',
+      source: 'THREAT_INTEL',
+      score: effectiveQuery.toLowerCase().includes('c2') || effectiveQuery.toLowerCase().includes('beacon') ? 0.95 : 0.82,
+    },
+    {
+      chunk_id: 'chunk-103',
+      incident_id: 'inc-9475',
+      incident_title: 'Password Spraying Attack Against SSO IdP Portal',
+      incident_severity: 'MEDIUM',
+      content: 'Password spraying pattern T1110.003 against single-sign-on endpoints utilizing rotating Tor proxy relays to evade IP-based rate limiting across 800 accounts.',
+      source: 'AGENT_SYNTHESIS',
+      score: effectiveQuery.toLowerCase().includes('spray') || effectiveQuery.toLowerCase().includes('password') ? 0.93 : 0.76,
+    },
+    {
+      chunk_id: 'chunk-104',
+      incident_id: 'inc-9490',
+      incident_title: 'Ransomware Staging & Volume Shadow Deletion',
+      incident_severity: 'CRITICAL',
+      content: 'Volume shadow copy purge command vssadmin.exe delete shadows coupled with high-entropy bulk SMB file modification bursts preceding AES encryption deployment.',
+      source: 'DEFENDER_EDR',
+      score: effectiveQuery.toLowerCase().includes('ransomware') || effectiveQuery.toLowerCase().includes('shadow') ? 0.97 : 0.72,
+    },
+  ];
+
   try {
-    const res = await fetch(`${API_BASE}/api/memory/semantic/search?tenant_id=${tenantId}`, {
+    const res = await fetch(`${API_BASE}/api/memory/semantic/search?tenant_id=${encodeURIComponent(tenantId)}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ query, k, threshold }),
+      body: JSON.stringify({ query: effectiveQuery, k, threshold }),
     });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+    if (!res.ok) {
+      console.warn(`Semantic search API returned status ${res.status}. Using safe fallback memory nodes.`);
+      return fallbackSemantic.filter((s) => s.score >= threshold).slice(0, k);
+    }
+
     const data = await res.json();
     if (Array.isArray(data) && data.length > 0) return data;
-    throw new Error('Empty semantic search results');
-  } catch {
-    const fallbackSemantic: SemanticSearchResult[] = [
-      {
-        chunk_id: 'chunk-101',
-        incident_id: 'inc-9481',
-        incident_title: 'Suspected Kerberoasting Activity on Domain Controller',
-        incident_severity: 'CRITICAL',
-        content: 'Kerberoasting technique T1558.003 involves requesting RC4-HMAC encrypted Kerberos service tickets (TGS) for offline password cracking against high-privilege service accounts.',
-        source: 'MITRE_ATTACK_INTEL',
-        score: query ? (query.toLowerCase().includes('kerberos') ? 0.96 : 0.88) : 0.94,
-      },
-      {
-        chunk_id: 'chunk-102',
-        incident_id: 'inc-9482',
-        incident_title: 'Anomalous Outbound SSH Traffic to Known C2 IP',
-        incident_severity: 'HIGH',
-        content: 'Command and control beaconing T1071.001 to external IP 198.51.100.23 on TCP port 2222 indicates potential Cobalt Strike or Mythic agent listener with 45s jitter.',
-        source: 'THREAT_INTEL',
-        score: query ? (query.toLowerCase().includes('c2') || query.toLowerCase().includes('beacon') ? 0.95 : 0.82) : 0.89,
-      },
-      {
-        chunk_id: 'chunk-103',
-        incident_id: 'inc-9475',
-        incident_title: 'Password Spraying Attack Against SSO IdP Portal',
-        incident_severity: 'MEDIUM',
-        content: 'Password spraying pattern T1110.003 against single-sign-on endpoints utilizing rotating Tor proxy relays to evade IP-based rate limiting across 800 accounts.',
-        source: 'AGENT_SYNTHESIS',
-        score: query ? (query.toLowerCase().includes('spray') || query.toLowerCase().includes('password') ? 0.93 : 0.76) : 0.82,
-      },
-      {
-        chunk_id: 'chunk-104',
-        incident_id: 'inc-9490',
-        incident_title: 'Ransomware Staging & Volume Shadow Deletion',
-        incident_severity: 'CRITICAL',
-        content: 'Volume shadow copy purge command vssadmin.exe delete shadows coupled with high-entropy bulk SMB file modification bursts preceding AES encryption deployment.',
-        source: 'DEFENDER_EDR',
-        score: query ? (query.toLowerCase().includes('ransomware') || query.toLowerCase().includes('shadow') ? 0.97 : 0.72) : 0.78,
-      },
-    ];
-
-    return fallbackSemantic
-      .filter((s) => s.score >= threshold)
-      .slice(0, k);
+    return fallbackSemantic.filter((s) => s.score >= threshold).slice(0, k);
+  } catch (err) {
+    console.warn('Semantic search fetch error:', err);
+    return fallbackSemantic.filter((s) => s.score >= threshold).slice(0, k);
   }
 }
+
+// Backwards-compatibility and semantic query alias
+export const getSemanticMemory = searchSemanticMemory;
 
 export async function fetchProceduralRunbooks(
   tenantId: string = 'tenant-alpha'

@@ -75,11 +75,14 @@ export default function MemoryExplorerPage() {
         fetchProceduralRunbooks(activeTenant),
       ]);
 
-      setEpisodicIncidents(epData);
-      setSemanticResults(semData);
-      setProceduralRunbooks(procData);
+      setEpisodicIncidents(Array.isArray(epData) ? epData : []);
+      setSemanticResults(Array.isArray(semData) ? semData : []);
+      setProceduralRunbooks(Array.isArray(procData) ? procData : []);
     } catch (e) {
       console.warn('Error loading memory store:', e);
+      setEpisodicIncidents([]);
+      setSemanticResults([]);
+      setProceduralRunbooks([]);
     } finally {
       setIsLoading(false);
     }
@@ -116,7 +119,7 @@ export default function MemoryExplorerPage() {
       const events = await fetchIncidentTimeline(activeTenant, incidentId);
       setExpandedTimelines((prev) => ({
         ...prev,
-        [incidentId]: events,
+        [incidentId]: Array.isArray(events) ? events : [],
       }));
     } catch (e) {
       console.warn('Error fetching timeline:', e);
@@ -257,12 +260,12 @@ export default function MemoryExplorerPage() {
             <span>Click any incident to inspect its chronological event timeline</span>
           </div>
 
-          {episodicIncidents.length === 0 ? (
+          {(!episodicIncidents || episodicIncidents.length === 0) ? (
             <div className="p-12 text-center text-slate-500 font-mono text-xs border border-slate-800 rounded-xl bg-slate-900/40">
               No episodic incidents match the search criteria. Try clearing filters or changing query.
             </div>
           ) : (
-            episodicIncidents.map((item) => {
+            (episodicIncidents || []).map((item) => {
               const isTimelineOpen = !!expandedTimelines[item.id];
               const isTimelineLoading = loadingTimelineId === item.id;
               const events = expandedTimelines[item.id] || [];
@@ -316,7 +319,7 @@ export default function MemoryExplorerPage() {
                   {/* Tags & Timeline Toggle Button */}
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2 border-t border-slate-800/80">
                     <div className="flex flex-wrap gap-1.5">
-                      {item.tags.map((tag) => (
+                      {(item.tags || []).map((tag) => (
                         <span
                           key={tag}
                           className="text-[10px] font-mono bg-slate-950 border border-slate-800 text-cyan-300/90 px-2 py-0.5 rounded"
@@ -358,12 +361,12 @@ export default function MemoryExplorerPage() {
                           <span>Chronological Forensic Event Stream [{item.id}]</span>
                         </span>
                         <span className="text-[10px] text-slate-500">
-                          {events.length} Events Linked in Graph
+                          {(events || []).length} Events Linked in Graph
                         </span>
                       </div>
 
                       <div className="space-y-2.5">
-                        {events.map((evt, idx) => (
+                        {(events || []).map((evt, idx) => (
                           <div
                             key={evt.id}
                             className="flex items-start space-x-3 text-xs font-mono p-2.5 rounded bg-slate-900/80 border border-slate-800/80"
@@ -424,12 +427,12 @@ export default function MemoryExplorerPage() {
 
           {/* Results List */}
           <div className="space-y-4">
-            {semanticResults.length === 0 ? (
+            {(!semanticResults || semanticResults.length === 0) ? (
               <div className="p-12 text-center text-slate-500 font-mono text-xs border border-slate-800 rounded-xl bg-slate-900/40">
                 No semantic vector chunks matched threshold ≥ {searchParams.threshold.toFixed(2)}. Adjust the threshold or query.
               </div>
             ) : (
-              semanticResults.map((chunk) => {
+              (semanticResults || []).map((chunk) => {
                 const matchPct = Math.round(chunk.score * 100);
 
                 return (
@@ -497,63 +500,68 @@ export default function MemoryExplorerPage() {
           </div>
 
           <div className="space-y-6">
-            {proceduralRunbooks.map((rb) => {
-              const isSimulating = simulatedRunbookId === rb.id;
+            {(!proceduralRunbooks || proceduralRunbooks.length === 0) ? (
+              <div className="p-12 text-center text-slate-500 font-mono text-xs border border-slate-800 rounded-xl bg-slate-900/40">
+                No procedural runbooks loaded. Check connection to FalkorDB.
+              </div>
+            ) : (
+              (proceduralRunbooks || []).map((rb) => {
+                const isSimulating = simulatedRunbookId === rb.id;
 
-              return (
-                <div
-                  key={rb.id}
-                  className="bg-slate-900/60 border border-slate-800 rounded-xl p-5 hover:border-purple-500/40 transition-all space-y-4"
-                >
-                  {/* Playbook Header */}
-                  <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 border-b border-slate-800 pb-3">
-                    <div>
-                      <div className="flex items-center space-x-2 text-xs font-mono mb-1">
-                        <span className="text-purple-400 font-bold">[{rb.id}]</span>
-                        <span className="px-2 py-0.5 rounded bg-purple-950/80 text-purple-300 border border-purple-800">
-                          v{rb.version || '1.0'}
-                        </span>
+                return (
+                  <div
+                    key={rb.id}
+                    className="bg-slate-900/60 border border-slate-800 rounded-xl p-5 hover:border-purple-500/40 transition-all space-y-4"
+                  >
+                    {/* Playbook Header */}
+                    <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 border-b border-slate-800 pb-3">
+                      <div>
+                        <div className="flex items-center space-x-2 text-xs font-mono mb-1">
+                          <span className="text-purple-400 font-bold">[{rb.id}]</span>
+                          <span className="px-2 py-0.5 rounded bg-purple-950/80 text-purple-300 border border-purple-800">
+                            v{rb.version || '1.0'}
+                          </span>
+                        </div>
+                        <h3 className="text-base font-bold text-white">{rb.title}</h3>
                       </div>
-                      <h3 className="text-base font-bold text-white">{rb.title}</h3>
+
+                      <div className="flex items-center space-x-3">
+                        <span className="text-xs font-mono bg-slate-950 border border-slate-800 text-amber-300 px-3 py-1.5 rounded">
+                          Pattern: {rb.attack_pattern}
+                        </span>
+                        <button
+                          onClick={() => handleSimulateRunbook(rb.id)}
+                          disabled={isSimulating}
+                          className={`px-3 py-1.5 rounded text-xs font-mono font-semibold flex items-center space-x-1.5 transition-all ${
+                            isSimulating
+                              ? 'bg-emerald-600 text-white animate-pulse'
+                              : 'bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700'
+                          }`}
+                        >
+                          {isSimulating ? (
+                            <>
+                              <CheckCircle2 className="w-3.5 h-3.5 text-white" />
+                              <span>EXECUTED STEPS</span>
+                            </>
+                          ) : (
+                            <>
+                              <Workflow className="w-3.5 h-3.5 text-purple-400" />
+                              <span>Simulate Runbook</span>
+                            </>
+                          )}
+                        </button>
+                      </div>
                     </div>
 
-                    <div className="flex items-center space-x-3">
-                      <span className="text-xs font-mono bg-slate-950 border border-slate-800 text-amber-300 px-3 py-1.5 rounded">
-                        Pattern: {rb.attack_pattern}
-                      </span>
-                      <button
-                        onClick={() => handleSimulateRunbook(rb.id)}
-                        disabled={isSimulating}
-                        className={`px-3 py-1.5 rounded text-xs font-mono font-semibold flex items-center space-x-1.5 transition-all ${
-                          isSimulating
-                            ? 'bg-emerald-600 text-white animate-pulse'
-                            : 'bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700'
-                        }`}
-                      >
-                        {isSimulating ? (
-                          <>
-                            <CheckCircle2 className="w-3.5 h-3.5 text-white" />
-                            <span>EXECUTED STEPS</span>
-                          </>
-                        ) : (
-                          <>
-                            <Workflow className="w-3.5 h-3.5 text-purple-400" />
-                            <span>Simulate Runbook</span>
-                          </>
-                        )}
-                      </button>
-                    </div>
-                  </div>
+                    {/* Sequential Steps Trail */}
+                    <div className="space-y-2.5">
+                      <div className="text-xs font-mono uppercase tracking-wider text-slate-400 flex items-center space-x-2">
+                        <Layers className="w-3.5 h-3.5 text-cyan-400" />
+                        <span>Sequential Mitigation Steps</span>
+                      </div>
 
-                  {/* Sequential Steps Trail */}
-                  <div className="space-y-2.5">
-                    <div className="text-xs font-mono uppercase tracking-wider text-slate-400 flex items-center space-x-2">
-                      <Layers className="w-3.5 h-3.5 text-cyan-400" />
-                      <span>Sequential Mitigation Steps</span>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                      {rb.steps.map((st) => (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                        {(rb.steps || []).map((st) => (
                         <div
                           key={st.order}
                           className={`p-3.5 rounded-lg border flex flex-col justify-between transition-colors ${
@@ -593,8 +601,9 @@ export default function MemoryExplorerPage() {
                   </div>
                 </div>
               );
-            })}
-          </div>
+            })
+          )}
+        </div>
         </div>
       )}
     </div>

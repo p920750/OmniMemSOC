@@ -7,12 +7,16 @@ from app.config import settings
 from app.falkor_client import falkor_client
 from app.memory_engine import memory_engine
 from app.agent_swarm import agent_swarm, AgentRole
+from app.routers.memory import router as memory_router
 
 app = FastAPI(
     title=settings.APP_NAME,
     version="0.2.0",
     description="Multi-Tenant Autonomous Memory Engine for Security Operations Centers (SOC) powered by FalkorDB"
 )
+
+# Mount Routers
+app.include_router(memory_router)
 
 # CORS Middleware
 app.add_middleware(
@@ -119,90 +123,6 @@ def get_tenants():
             "incidents_count": 34
         }
     ]
-
-# ==============================================================================
-# Memory Engine Routes (Episodic, Semantic, Procedural)
-# ==============================================================================
-
-# --- Episodic Memory ---
-@app.get("/api/memory/episodic")
-def get_episodic_memory(
-    tenant_id: str = Query(default="tenant-alpha"),
-    query: str = Query(default=""),
-    severity: Optional[str] = Query(default=None),
-    limit: int = Query(default=10, ge=1, le=100)
-):
-    return memory_engine.search_episodic_memory(
-        tenant_id=tenant_id,
-        query=query,
-        severity=severity,
-        limit=limit
-    )
-
-@app.post("/api/memory/episodic")
-def create_episodic_incident(tenant_id: str, incident: IncidentCreate):
-    return memory_engine.record_incident(tenant_id=tenant_id, incident_data=incident.dict())
-
-@app.post("/api/memory/episodic/{incident_id}/events")
-def create_episodic_event(tenant_id: str, incident_id: str, event: EpisodicEventCreate):
-    return memory_engine.record_episodic_event(
-        tenant_id=tenant_id,
-        incident_id=incident_id,
-        event_data=event.dict()
-    )
-
-@app.get("/api/memory/incident/{incident_id}/timeline")
-def get_incident_timeline(tenant_id: str = Query(default="tenant-alpha"), incident_id: str = ""):
-    return memory_engine.get_incident_timeline(tenant_id=tenant_id, incident_id=incident_id)
-
-# --- Semantic Memory & Vector Search ---
-@app.post("/api/memory/semantic")
-def store_semantic_memory(tenant_id: str, chunk: SemanticMemoryCreate):
-    return memory_engine.store_semantic_memory(
-        tenant_id=tenant_id,
-        incident_id=chunk.incident_id,
-        content=chunk.content,
-        source=chunk.source,
-        embedding=chunk.embedding
-    )
-
-@app.post("/api/memory/semantic/search")
-def search_semantic_memory(tenant_id: str = Query(default="tenant-alpha"), req: SemanticSearchRequest = None):
-    if not req or not req.query:
-        raise HTTPException(status_code=400, detail="Query string is required")
-    return memory_engine.search_semantic_memory(
-        tenant_id=tenant_id,
-        query=req.query,
-        k=req.k,
-        threshold=req.threshold
-    )
-
-@app.get("/api/memory/hybrid")
-def hybrid_memory_search(
-    tenant_id: str = Query(default="tenant-alpha"),
-    query: str = Query(default=""),
-    severity: Optional[str] = Query(default=None),
-    k: int = Query(default=5, ge=1, le=20)
-):
-    return memory_engine.hybrid_search(
-        tenant_id=tenant_id,
-        query=query,
-        severity=severity,
-        k=k
-    )
-
-# --- Procedural Memory ---
-@app.get("/api/memory/procedural")
-def get_procedural_memory(tenant_id: str = Query(default="tenant-alpha")):
-    return memory_engine.get_procedural_runbooks(tenant_id=tenant_id)
-
-@app.post("/api/memory/procedural")
-def create_procedural_runbook(tenant_id: str, runbook: ProceduralCreate):
-    return memory_engine.record_procedural_runbook(tenant_id=tenant_id, runbook=runbook.dict())
-
-@app.get("/api/memory/incident/{incident_id}/playbooks")
-def get_matching_playbooks(tenant_id: str = Query(default="tenant-alpha"), incident_id: str = ""):
-    return memory_engine.find_runbooks_for_incident(tenant_id=tenant_id, incident_id=incident_id)
 
 # ==============================================================================
 # Agent Swarm & Coordination Routes
