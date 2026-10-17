@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { fetchTenants, TenantInfo } from '../lib/api';
+import { fetchTenants, TenantInfo } from '@/lib/api';
 
 interface TenantContextType {
   activeTenant: string;

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useTenant } from '../../context/TenantContext';
-import { executeCypherQuery, CypherQueryResult } from '../../lib/api';
+import { executeCypherQuery, CypherQueryResult } from '@/lib/api';
 import GraphCanvas, { CanvasHighlightMode, GraphNode } from '../../components/GraphCanvas';
 import {
   Play,

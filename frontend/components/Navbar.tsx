@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import TenantSelector from './TenantSelector';
-import { fetchHealth, HealthResponse } from '../lib/api';
+import { fetchHealth, HealthResponse } from '@/lib/api';
 import {
   Shield,
   Activity,

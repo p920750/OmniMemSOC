@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { HandoffRecord } from '../lib/api';
+import { HandoffRecord } from '@/lib/api';
 import {
   ShieldAlert,
   ShieldCheck,

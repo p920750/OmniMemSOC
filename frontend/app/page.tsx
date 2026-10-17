@@ -10,7 +10,7 @@ import {
   EpisodicIncident,
   SwarmStatusResponse,
   PipelineExecutionResult,
-} from '../lib/api';
+} from '@/lib/api';
 import {
   Shield,
   ShieldAlert,

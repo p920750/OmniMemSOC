@@ -11,7 +11,7 @@ import {
   SemanticSearchResult,
   ProceduralRunbook,
   EpisodicEvent,
-} from '../../lib/api';
+} from '@/lib/api';
 import MemorySearch, { MemorySearchParams, MemoryLayerType } from '../../components/MemorySearch';
 import {
   Brain,

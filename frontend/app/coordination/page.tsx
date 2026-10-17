@@ -9,7 +9,7 @@ import {
   HandoffRecord,
   SwarmStatusResponse,
   PipelineExecutionResult,
-} from '../../lib/api';
+} from '@/lib/api';
 import AgentHandoffVisualizer from '../../components/AgentHandoffVisualizer';
 import {
   Play,
