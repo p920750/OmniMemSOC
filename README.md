@@ -1,6 +1,6 @@
 # 🛡️ OmniMemSOC: Multi-Tenant Autonomous Memory Engine for Security Operations
 
-> **Track 2 Submission: Agent Memory and Coordination (PS5 with GTA VI Hackathon)**  
+> **Track 2 Submission: Agent Memory and Coordination**  
 > **Live Web Application**: [https://omnimemsocfrontend.vercel.app/](https://omnimemsocfrontend.vercel.app/)  
 > **Live Backend API**: [https://omnimemsoc-backend.onrender.com](https://omnimemsoc-backend.onrender.com)  
 > **Video Demonstration**: [🎬 Watch OmniMemSOC Demo Video](https://drive.google.com/file/d/1IaNFsNTv61BIhdvcDR3Iw7lHWCczC9Uz/view?usp=sharing)
@@ -17,7 +17,15 @@ Beyond immediate alert processing, OmniMemSOC delivers transformative enterprise
 
 ---
 
-<h2 style="color: #38ef7d;">🎯 2. Target Audience & Value Proposition</h2>
+<h2 style="color: #38ef7d;">🏆 Hackathon Track & Track Alignment</h2>
+
+OmniMemSOC is proudly submitted under **Track 2 — Agent Memory and Coordination**. The platform directly tackles the foundational challenge highlighted by Track 2: transforming isolated, ephemeral AI agents into a coordinated, stateful defensive collective capable of operating over extended temporal horizons. By integrating FalkorDB as the central cognitive foundation, OmniMemSOC implements a native Tri-Layer Memory architecture spanning Episodic, Semantic, and Procedural memory. Episodic memory organizes chronological incident timelines through explicit `(:Incident)-[:HAS_EVENT]->(:Event)` graph paths, preserving the exact forensic progression of multi-stage attacks across arbitrary session boundaries. Semantic memory leverages FalkorDB's native 1536-dimensional dense vector index (`vecf32`) and procedure calls (`CALL db.idx.vector.queryNodes`), allowing agents to execute natural language similarity queries that match current alert signals against historical tactics, techniques, and procedures (TTPs). Meanwhile, Procedural memory models MITRE ATT&CK mitigation strategies as directed property graph trees, enabling autonomous agents to instantly identify and execute deterministic, sequential remediation playbooks without requiring human operators to restate past operational knowledge.
+
+In direct fulfillment of Track 2's coordination criteria, OmniMemSOC establishes a unified, shared cognitive graph space where specialized agents—specifically the Triage Agent, Containment Agent, and Forensic Agent—coordinate through graph-native state serialization rather than brittle prompt piping. Every threat classification, containment action, and forensic deduction is permanently formalized into an audit-ready `(:AgentHandoff)` graph node in FalkorDB, interconnected via directional `[:INITIATED_HANDOFF]`, `[:ASSIGNED_TO]`, and `[:ASSOCIATED_WITH]` relationships. This structural design guarantees zero context degradation across agent lifecycles, empowering downstream agents to resume ongoing investigations with complete cryptographic and contextual provenance. Furthermore, OmniMemSOC enforces a Zero-Trust Multi-Agent Consensus Protocol where agents cast weighted votes—evaluating malicious intent, operational collateral damage, and historical graph corroboration—against deterministic quorum thresholds. If consensus is not reached or high-impact crown jewels are implicated, automated human-in-the-loop fallback mechanisms trigger with complete forensic lineage attached, establishing an unprecedented standard for verifiable, durable, and safe multi-agent coordination.
+
+---
+
+<h2 style="color: #9d4edd;">🎯 2. Target Audience & Value Proposition</h2>
 
 ### Primary User Personas
 - **Enterprise Security Operations Centers (SOCs)**: Tier-1, Tier-2, and Tier-3 SOC analysts dealing with alert volume overload, context-switching fatigue, and high employee turnover rates.
@@ -399,14 +407,6 @@ Experience OmniMemSOC in action with our full-length walkthrough demonstrating m
 
 ▶️ **[Click Here to Watch the OmniMemSOC Video Demonstration](https://drive.google.com/file/d/1IaNFsNTv61BIhdvcDR3Iw7lHWCczC9Uz/view?usp=sharing)**
 
-### Video Demonstration Chapters:
-- `0:00 - 0:45` : Opening Hook & Track 2 Problem (Stateless Agent Amnesia)
-- `0:45 - 2:00` : Executive Overview & Multi-Tenant Graph Partition Separation
-- `2:00 - 3:15` : Autonomous Agent Swarm Coordination & State Handoffs (`:AgentHandoff`)
-- `3:15 - 4:30` : Tri-Layer Memory Explorer (Episodic, Semantic Vector, Procedural Runbooks)
-- `4:30 - 5:15` : FalkorDB Real-Time Graph Analytics & Native Algorithms (`algo.pageRank`, `algo.betweenness`)
-- `5:15 - 5:30` : Closing Summary & Track 2 Compliance
-
 ---
 
 <h2 style="color: #9d4edd;">📄 13. License</h2>
@@ -415,9 +415,9 @@ This project is licensed under the **MIT License** — see the [LICENSE](LICENSE
 
 ---
 
-<h2 style="color: #ff5e62;">🏆 14. Submission Notes & Acknowledgments</h2>
+<h2 style="color: #ff5e62;">📋 14. Submission Notes & Acknowledgments</h2>
 
-- **Hackathon Track**: **Track 2 — Agent Memory and Coordination (PS5 with GTA VI Hackathon)**
+- **Hackathon Track**: **Track 2 — Agent Memory and Coordination**
 - **Primary Technological Pillar**: **FalkorDB**'s Graph & Vector Engine
 - **Developer & Team Lead**: **Praveen** ([GitHub: @p920750](https://github.com/p920750))
 - **Special Thanks**: To the FalkorDB engineering team for building the GraphBLAS engine and vector index capabilities that made sub-millisecond cognitive agent memory possible.
