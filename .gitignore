@@ -95,4 +95,5 @@ Thumbs.db
 *.mp4
 *.mov
 *.avi
-demovideo/
+!demovideo/
+!demovideo/*.mp4
