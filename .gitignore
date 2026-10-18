@@ -90,3 +90,9 @@ Thumbs.db
 *.swo
 *.sublime-workspace
 *.sublime-project
+
+# Large Media & Video Files
+*.mp4
+*.mov
+*.avi
+demovideo/
